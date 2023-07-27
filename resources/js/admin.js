@@ -20,7 +20,7 @@ export function initAdmin(socket) {
     })
 
     function renderItems(items) {
-        let parsedItems = Object.values(items)
+        let parsedItems = Object.values(items || {})
         return parsedItems.map((menuItem) => {
             return `
                 <p>${ menuItem.item.name } - ${ menuItem.qty } pcs </p>
@@ -75,6 +75,7 @@ export function initAdmin(socket) {
                 <td class="border px-4 py-2">
                     ${ order.paymentStatus ? 'paid' : 'Not paid' }
                 </td>
+                
             </tr>
         `
         }).join('')

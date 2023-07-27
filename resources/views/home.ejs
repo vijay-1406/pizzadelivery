@@ -1,7 +1,10 @@
 <div class="container mx-auto flex items-ceneter justify-between " >
-    <div class="imagecontainer mx-auto flex items-ceneter justify-between py-4">
-        <img src="/img/pizzahome.jpg" alt="pizzahome" style="width:100%;opacity: 80%;">
-        
+    <div class="homeimage" id="imgContainer" >
+       <div class="flex flex-col justify-center items-center py-64 ">
+            <div style="font-size: 500%;" class="mt-50"><h1 >Delicious Pizza</h1></div>
+            <div style="font-size: 200%;"><H1>HOT   |   SPICY   |   TASTY</H1></div>
+            <button  style="font-size: 150;" class="btn-primary px-4 py-2 rounded-full mt-4"><a href="/menu">Order Now</a></button>
+       </div>
     </div>
 </div>
 
@@ -10,16 +13,25 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  col-gap-12 row-gap-16 ">
         <% pizzas.forEach(function(pizza){ %>
             <div class="w-full md:w-64">
-                <img class="h-40 mb-4 mx-auto"  src="/img/<%= pizza.image %>" alt="pizza">
+                <img src="data:image/png;base64,<%=pizza.image.toString('base64')%>" class="h-40 mb-4 mx-auto" style="width: 160.33px; height: 160px;"  alt="pizza">
                 <div class="text-center">
                     <h2 class="mb-4 text-lg"><%= pizza.name %></h2>
                     <span class="size_color py-1 px-4 rounded-full uppercase text-xs"><%= pizza.size %></span>
-                    <div class="flex items-center justify-around mt-6">
-                        <span class="font-bold text-lg">₹<%= pizza.price %></span>
-                        <button data-pizza="<%= JSON.stringify(pizza) %>" class="add-to-cart py-1 px-6 rounded-full flex items-center font-bold">
+                    <span class="font-bold text-lg">₹<%= pizza.price %></span>
+                    <div id="add-del-btns" value="<%=JSON.stringify(pizza) %>" class="flex items-center justify-around mt-6">
+                        
+                        <button data-pizza="<%= JSON.stringify(pizza) %>" id="add-to-cart" class="add-to-cart py-1 px-6 rounded-full flex items-center font-bold">
                             <span>+</span>
                             <span class="ml-4">Add</span>
                         </button>
+                        <% if(session.cart) { %>
+                       <% if(session.cart.items[pizza._id]) { %>
+                        <button data-pizza="<%= JSON.stringify(pizza) %>" id="delete-from-cart" class="delete-from-cart py-1 px-6 rounded-full flex items-center font-bold">
+                            <span>-</span>
+                            <span class="ml-4">Delete</span>
+                        </button>
+                        <% } %>
+                        <% } %>
                     </div>
                 </div>
             </div>

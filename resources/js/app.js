@@ -2,11 +2,12 @@ import axios from 'axios'
 import Noty from 'noty'
 import { initAdmin } from './admin'
 const moment = require('moment')
+import { initStripe } from './stripe'
 
 let addToCart = document.querySelectorAll('.add-to-cart')
 let cartCounter = document.querySelector('#cartCounter')
-function upadteCart(pizza){
-    axios.post('/update-cart',pizza).then(res=>{
+function movetoCart(pizza){
+    axios.post('/add-to-cart',pizza).then(res=>{
         cartCounter.innerText = res.data.totalQty
         new Noty({
             type : 'success',
@@ -27,7 +28,40 @@ function upadteCart(pizza){
 addToCart.forEach((btn)=>{
     btn.addEventListener('click',(e)=>{
         let pizza = JSON.parse(btn.dataset.pizza)
-        upadteCart(pizza)
+        movetoCart(pizza)
+        window.location.reload()
+        
+    })
+})
+
+let deleteFromCart = document.querySelectorAll('.delete-from-cart')
+
+function removefromCart(deletepizza){
+    axios.post('/delete-from-cart',deletepizza).then((res)=>{
+        cartCounter.innerText = res.data.totalQty
+        new Noty({
+            type : 'success',
+            timeout : 1000,
+            progressBar : false,
+            text : 'Item deleted from Cart'
+        }).show()
+    }).catch(err =>{
+        new Noty({
+            type : 'error',
+            timeout : 1000,
+            progressBar : false,
+            text : 'Something went wrong'
+        })
+    })
+}
+
+deleteFromCart.forEach((btn)=>{
+    btn.addEventListener('click',(e)=>{  
+        let deletepizza = JSON.parse(btn.dataset.pizza)
+        removefromCart(deletepizza)
+        window.location.reload()
+        
+
     })
 })
 
@@ -37,6 +71,14 @@ if(alertMsg) {
         alertMsg.remove()
     }, 2000)
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -72,6 +114,50 @@ function updateStatus(order) {
 
 updateStatus(order);
 
+initStripe()
+
+
+
+
+
+
+//Ajax call
+// const paymentForm = document.querySelector('#payment-form')
+// if(paymentForm){
+//     paymentForm.addEventListener('submit',(e) =>{
+//         e.preventDefault()
+//         let formData = new FormData(paymentForm)
+//         let formObject = {}
+//         for(let  [key, value] of formData.entries()){
+//             formObject[key] = value  
+//         }
+//         axios.post('/orders',formObject).then((res)=>{
+//             new Noty({
+//                 type : 'success',
+//                 timeout : 1000,
+//                 progressBar : false,
+//                 text : res.data.message
+//             }).show();
+//             setTimeout(() => {
+//                 window.location.href = '/customers/orders';
+//             }, 1000);
+            
+//         }).catch((err)=>{
+//             new Noty({
+//                 type : 'success',
+//                 timeout : 1000,
+//                 progressBar : false,
+//                 text : err.res.data.message
+//             }).show()
+//         })
+//         console.log(formObject)
+    
+       
+//     })
+    
+    
+// }
+
 // Socket
 let socket = io()
 
@@ -98,3 +184,4 @@ socket.on('orderUpdated', (data) => {
         progressBar: false,
     }).show();
 })
+

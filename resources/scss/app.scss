@@ -6,6 +6,7 @@ body {
     font-family: 'Lato', sans-serif;
     -webkit-font-smoothing: antialiased;
     color: $dark;
+    background-color:beige;
 }
 
 nav li:last-child a {
@@ -40,9 +41,46 @@ section.hero {
         outline: none;
     }
 }
+.delete-from-cart {
+    border: 2px solid $dominos_red;
+    color: $dominos_red;
+    transition: $smooth;
+    &:hover {
+        background: $dominos_red;
+        border-color: $pure;
+        color: $pure;
+    }
+    &:focus {
+        outline: none;
+    }
+}
+
+.homeimage{
+    opacity: 100%;  background-image: url('/img/pizzahome.jpg'); width: 1280px; height: 786px;
+    background-repeat: no-repeat; 
+    background-size: cover; 
+    -webkit-background-size: cover; 
+    -mox-background-size: cover; 
+    -o-background-size: cover;
+    animation-delay: 2s;
+    //animation: change 5s infinite ease;
+    //animation: change 10s linear infinite ;
+    
+    
+}
+
+@keyframes change {
+    
+    25%{background-image: url('/img/pizzahome1.jpg');}
+    50%{background-image: url('/img/pizzahome2.jpg');}
+    75%{background-image: url('/img/pizzahome.jpg');}
+    100%{background-image: url('/img/pizzahome1.jpg');}
+
+}
+
 
 .btn-primary {
-    background: $dominos_red;
+    background: $dominos_blue;
     transition: $smooth;
     &:hover {
         background: $dominos_red;
@@ -200,6 +238,34 @@ section.status {
 }
 
 .StripeElement {
+    box-sizing: border-box;
+    width: 50%;
+    margin-left: auto;
+    height: 40px;
+    padding: 10px 12px;
+
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: white;
+
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
+  }
+
+  .StripeElement--focus {
+    box-shadow: 0 1px 3px 0 #cfd7df;
+  }
+
+  .StripeElement--invalid {
+    border-color: #fa755a;
+  }
+
+  .StripeElement--webkit-autofill {
+    background-color: #fefde5 !important;
+  }
+
+  .StripeElement {
     box-sizing: border-box;
     width: 50%;
     margin-left: auto;

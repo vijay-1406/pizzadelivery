@@ -1,14 +1,17 @@
 const Order = require('../../../models/order')
 const moment = require('moment')
+const Stripe = require('stripe')
+const stripe = Stripe('sk_test_51MHREESAIB73QxtIsYM5Ue6XjSjE1Ir4Z7qn9yXO51Sa3TGZBv4iF4LBQYuYRfkYDeqajAzn4AZKl3ijUfGRi8zQ00ZwvLQe8q')
 
 function orderController(){
     return {
         store(req,res){
+            
             //Validate request
-            const {phone, address} = req.body
+            const {phone, address, stripeToken, paymentType} = req.body
+            console.log(req.body)
             if(!phone || !address){
-                req.flash('error', 'All fields are required')
-                return res.redirect('/cart')
+                return res.status(422).json({message : 'All fields are required'})
             }
 
             const order = new Order( {
@@ -20,19 +23,41 @@ function orderController(){
 
             order.save().then(result =>{
                 Order.populate(result, { path: 'customerId' }, (err,placedOrder) => {
-                    req.flash('success','Order placed Successfully')
-                    delete req.session.cart
-                    //emit 
-                    const eventEmitter = req.app.get('eventEmitter')
-                    eventEmitter.emit('orderPlaced', order)
-                    return res.redirect('/customers/orders')
-                })
-                
-            }).catch(err=>{
-                req.flash('error','Something went wrong')
-                return res.redirect('/cart')
-            })
+                    //req.flash('success','Order placed Successfully')
 
+                    //stripe payment
+        if(paymentType === 'card') {
+                        stripe.charges.create({
+                            amount: req.session.cart.totalPrice  * 100,
+                            source: stripeToken,
+                            currency: 'inr',
+                            description: `Pizza order: ${placedOrder._id}`
+                        }).then(() => {
+                            placedOrder.paymentStatus = true
+                            placedOrder.paymentType = paymentType
+                            placedOrder.save().then((order) => {
+                                // Emit
+                                const eventEmitter = req.app.get('eventEmitter')
+                                eventEmitter.emit('orderPlaced', order)
+                                delete req.session.cart
+                                return res.json({ message : 'Payment successful, Order placed successfully' });
+                            }).catch((err) => {
+                                console.log(err)
+                            })
+
+                        }).catch((err) => {
+                            
+                            delete req.session.cart
+                            return res.json({ message : 'OrderPlaced but payment failed, You can pay at delivery time' });
+                        })
+                    } else {
+                        delete req.session.cart
+                        return res.json({ message : 'Order placed succesfully' });
+                    }
+                })
+            }).catch(err => {
+                return res.status(500).json({ message : 'Something went wrong' });
+            })
         },
         async index(req,res){
             const orders = await Order.find({customerId : req.user._id}, null, {sort : {'createdAt':-1}})

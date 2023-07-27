@@ -10,6 +10,10 @@ const flash = require('express-flash')
 const MongoStore = require('connect-mongo')
 const passport = require('passport')
 const Emitter = require('events')
+//var bodyParser = require('body-parser')
+const multer = require('multer')
+
+
 
 //  Database connection
 const mongoose = require('mongoose')
@@ -20,6 +24,11 @@ mongoose.connect(process.env.MONGO_CONNECTION_URL, {useNewUrlParser: true, useUn
     if(err) throw err
     console.log("Connected")
 })
+
+//store image
+
+const upload = multer({ dest: "uploads/" });
+
 
 // Event emitter
 const eventEmitter = new Emitter()
@@ -51,15 +60,20 @@ app.use((req,res,next)=>{
 })
 
 
-app.use(express.json())
-app.use(express.urlencoded({extended : false}))
+// app.use(express.json())
+// app.use(express.urlencoded({extended : false}))
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb'}));
+
 app.use(expressLayout)
 app.use(express.static('public'))
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views',path.join(__dirname,'/resources/views'))
 app.set('view engine','ejs')
 
-
+var bodyParser = require('body-parser');
+app.use(bodyParser.json({limit: "50mb", extended: true}));
+app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
 
 require('./routes/web')(app)
 app.use((req,res)=>{
@@ -78,6 +92,7 @@ io.on('connection', (socket) => {
         socket.join(orderId)
       })
 })
+
 
 eventEmitter.on('orderUpdated', (data) => {
     io.to(`order_${data.id}`).emit('orderUpdated', data)
