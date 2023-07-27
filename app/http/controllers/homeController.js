@@ -4,6 +4,7 @@ function homeController(){
         async index(req,res){
             const pizzas = await Menu.find()
             //console.log(pizzas)
+            res.sendStatus(200)
                 return res.render('home',{pizzas:pizzas})
         },
         async menu(req,res){

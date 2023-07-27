@@ -9,10 +9,11 @@ const adminOrderController = require('../app/http/controllers/admin/orderControl
 const statusController = require('../app/http/controllers/admin/statusController')
 //const addpizzaContoller = require('../app/http/controllers/admin/addpizzaContoller')
 
-
+var path = require('path');
 function initRoutes(app){
 
-    app.get('/', homeController().index)
+    app.get('/', homeController().index) 
+    
     app.get('/menu',homeController().menu)
     app.get('/login',guest, authController().login)
     app.post('/login', authController().postLogin)
